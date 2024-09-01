@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* all svgs without a fill attribute should be filled with current color */
+svg:not([fill]) {
+    fill: currentColor;
+}
+
+html {
+    @apply text-slate-900
+}
