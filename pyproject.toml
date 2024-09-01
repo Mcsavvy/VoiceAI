@@ -12,7 +12,12 @@ python = "3.10.3"
 django = "^5.1"
 whitenoise = "^6.7.0"
 django-browser-reload = "^1.15.0"
+tts = "^0.22.0"
+openai-whisper = "^20231117"
 
+
+[tool.poetry.group.dev.dependencies]
+ipython = "^8.27.0"
 
 [build-system]
 requires = ["poetry-core"]
