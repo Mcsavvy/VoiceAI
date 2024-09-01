@@ -8,6 +8,7 @@ from app import env
 urlpatterns = [
     path(settings.DJANGO_ADMIN_URL, admin.site.urls),
     path("", include("core.urls")),
+    path("transcription/", include("transcription.urls")),
 ]
 
 # urlpatterns += staticfiles_urlpatterns()
