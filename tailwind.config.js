@@ -4,6 +4,7 @@ module.exports = {
   content: [
     'core/templates/**/*.html',
     'app/templates/**/*.html',
+    "transcription/templates/**/*.html",
   ],
   theme: {
     extend: {},
