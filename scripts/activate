@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# Load the virtual environment
+
+if [ ! -z $1 ]; then
+    ENV=$1
+    shift
+else
+    ENV="dev"
+fi
+
+
+ENV_FILES=(
+    ".env"
+    ".env.$ENV"
+    ".env.local"
+    ".env.$ENV.local"
+    # user-supplied env files
+    $@
+)
+
+if [ -d ".venv" ]; then
+    VENV_PATH=".venv"
+elif [ -d "venv" ]; then
+    VENV_PATH="venv"
+else
+    # check for poetry
+    if command -v poetry &> /dev/null; then
+        # check for poetry venv
+        VENV_PATH=$(poetry env info --path)
+        if [ -d "$VENV_PATH" ]; then
+            echo "Poetry virtual environment found."
+        else
+            echo "Poetry found but no virtual environment found." 1>&2
+            return 1
+        fi
+    else
+        echo "No virtual environment found." 1>&2
+        return 1
+    fi
+fi
+
+
+function loadenv {
+    for ENV_FILE in ${ENV_FILES}; do
+        if [ -f $ENV_FILE ]; then
+            export $(grep -v '^#' $ENV_FILE | xargs -d '\n')
+            echo "$ENV_FILE loaded."
+        fi
+    done
+}
+
+if [ "$VIRTUAL_ENV" = "$VENV_PATH" ]; then
+    echo "$(basename $VENV_PATH) is already active."
+else
+    if [ -n "$VIRTUAL_ENV" ]; then
+        echo "deactivating $(basename $VIRTUAL_ENV)."
+        deactivate
+    fi
+    echo "activating $(basename $VENV_PATH)."
+    source $VENV_PATH/bin/activate
+fi
+
+loadenv
+export DJANGO_ENV=$ENV
+unset VENV_PATH ENV_FILE ENV_FILES ENV

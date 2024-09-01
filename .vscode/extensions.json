@@ -1,0 +1,18 @@
+{
+    "recommendations": [
+        "github.vscode-github-actions",
+        "tamasfe.even-better-toml",
+        "qwtel.sqlite-viewer",
+        "me-dutour-mathieu.vscode-github-actions",
+        "github.copilot",
+        "github.copilot-chat",
+        "github.vscode-pull-request-github",
+        "eamodio.gitlens",
+        "matangover.mypy",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "junstyle.vscode-django-support",
+        "batisteo.vscode-django",
+        "bradlc.vscode-tailwindcss"
+    ]
+}

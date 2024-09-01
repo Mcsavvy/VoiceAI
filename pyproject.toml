@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "voiceai"
+version = "0.1.0"
+description = "An app for TTS, STT and Voice Cloning"
+authors = ["Dave Mcsavvy <davemcsavvii@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "3.10.3"
+django = "^5.1"
+whitenoise = "^6.7.0"
+django-browser-reload = "^1.15.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.isort]
+profile = "black"
+
+[tool.ruff]
+line-length = 80
+indent-width = 4
+target-version = "py310"
+exclude = [
+    ".git",
+    "__pycache__",
+    "migrations",
+    ".venv",
+    ".vscode",
+    ".ruff_cache",
+    ".mypy_cache",
+    ".pytest_cache",
+    "*.ipynb"
+]
+
+[tool.mypy]

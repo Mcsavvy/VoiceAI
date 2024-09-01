@@ -1,0 +1,44 @@
+{
+    "mypy.dmypyExecutable": "dmypy",
+    "files.autoSave": "afterDelay",
+    "files.autoSaveDelay": 10000,
+    "python.testing.pytestEnabled": true,
+    "terminal.integrated.enablePersistentSessions": false,
+    "[python]": {
+        "diffEditor.ignoreTrimWhitespace": false,
+        "editor.formatOnType": true,
+        "editor.wordBasedSuggestions": "off",
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit",
+            "source.fixAll.ruff": "explicit"
+        },
+    },
+    "ruff.importStrategy": "fromEnvironment",
+    "ruff.organizeImports": true,
+    "ruff.lint.run": "onType",
+    "python.analysis.inlayHints.callArgumentNames": "off",
+    "python.analysis.inlayHints.functionReturnTypes": false,
+    "python.analysis.useLibraryCodeForTypes": true,
+    "python.analysis.typeCheckingMode": "off",
+    "python.analysis.inlayHints.variableTypes": false,
+    "python.analysis.inlayHints.pytestParameters": true,
+    "editor.fontLigatures": true,
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.indentSize": "tabSize",
+    "editor.tabSize": 4,
+    "[html]": {
+        "editor.defaultFormatter": "vscode.html-language-features"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[css]": {
+        "editor.defaultFormatter": "vscode.css-language-features",
+        "tailwindCSS.suggestions": true,
+    },
+    "files.associations": {
+        "*.css": "tailwindcss"
+    },
+    "makefile.configureOnOpen": true
+}
