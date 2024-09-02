@@ -47,7 +47,10 @@ wheels/
 !.env.*.example
 data
 *.pt
+*.pth
 test_*.py
 *.wav
 *.mp3
 *.ogg
+
+bark
