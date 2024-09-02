@@ -45,3 +45,9 @@ wheels/
 !.env.local.example
 !.env.*.local.example
 !.env.*.example
+data
+*.pt
+test_*.py
+*.wav
+*.mp3
+*.ogg
