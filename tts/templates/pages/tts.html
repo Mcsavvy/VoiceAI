@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Text to Speech{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-3" style="background-color: #f9f9f9;">
+  <h2 class="p-4">
+    <img src="{% static "imgs/text_to_speech.jpg" %}" alt="" width="100px">
+    Convert Text to Speech
+  </h2>
+  <div class="p-4" style="height: 100vh;">
+    <form action="convert_text" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+          {{ form }}
+        </div>
+        <button class="btn btn-primary float-end" type="submit"><i class="bi bi-send"></i> Generate</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
