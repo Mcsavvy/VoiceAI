@@ -7,7 +7,6 @@ from django import forms
 from django.core.files.uploadedfile import UploadedFile
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
-from django.views.decorators.http import require_http_methods
 from django.views.generic import FormView
 
 from app.decorators import login_required
@@ -32,19 +31,16 @@ class TranscriptionView(FormView):
     form_class = TranscriptionForm
     template_name = "pages/transcription.html"
 
+    def form_valid(self, form):
+        audio: UploadedFile = form.cleaned_data["audio"]
+        id = uuid.uuid4()
+        os.makedirs("tmp", exist_ok=True)
+        temp_audio_path = f"tmp/{id}{path.splitext(audio.name)[1]}"
+        with open(temp_audio_path, "wb") as f:
+            for chunk in audio.chunks():
+                f.write(chunk)
+        result = model.transcribe(temp_audio_path, fp16=False)
+        return HttpResponse(result["text"])
 
-@require_http_methods(["POST"])
-def transcribe(request) -> HttpResponse:
-    id = uuid.uuid4()
-    form = TranscriptionForm(request.POST, request.FILES)
-    if not form.is_valid():
+    def form_invalid(self, form):
         return HttpResponse(f'<p style="color:red;">{form.errors}</p>')
-    # transcribe audio
-    audio: UploadedFile = form.cleaned_data["audio"]
-    os.makedirs("tmp", exist_ok=True)
-    temp_audio_path = f"tmp/{id}{path.splitext(audio.name)[1]}"
-    with open(temp_audio_path, "wb") as f:
-        for chunk in audio.chunks():
-            f.write(chunk)
-    result = model.transcribe(temp_audio_path, fp16=False)
-    return HttpResponse(result["text"])
