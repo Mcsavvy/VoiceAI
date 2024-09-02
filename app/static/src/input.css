@@ -10,3 +10,7 @@ svg:not([fill]) {
 html {
     @apply text-slate-900
 }
+
+button:disabled {
+    @apply cursor-not-allowed opacity-50;
+}
