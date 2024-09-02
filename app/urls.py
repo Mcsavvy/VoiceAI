@@ -8,6 +8,8 @@ from app import env
 urlpatterns = [
     path(settings.DJANGO_ADMIN_URL, admin.site.urls),
     path("", include("core.urls")),
+    path("tts/", include("tts.urls")),
+    path("voice-cloning/", include("voice_cloning.urls")),
     path("transcription/", include("transcription.urls")),
 ]
 

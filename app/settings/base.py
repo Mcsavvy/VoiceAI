@@ -26,6 +26,8 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 INSTALLED_APPS = [
     "core",
     "transcription",
+    "tts",
+    "voice_cloning",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
