@@ -8,16 +8,17 @@ import phonemizer
 import torch
 import torchaudio
 import yaml
-from models import *
-from Modules.diffusion.sampler import (
+from nltk.tokenize import word_tokenize
+
+from .models import *
+from .Modules.diffusion.sampler import (
     ADPM2Sampler,
     DiffusionSampler,
     KarrasSchedule,
 )
-from nltk.tokenize import word_tokenize
-from text_utils import TextCleaner
-from utils import *
-from Utils.PLBERT.util import load_plbert
+from .text_utils import TextCleaner
+from .utils import *
+from .Utils.PLBERT.util import load_plbert
 
 torch.manual_seed(0)
 torch.backends.cudnn.benchmark = False
@@ -73,7 +74,7 @@ global_phonemizer = phonemizer.backend.EspeakBackend(
     language="en-us", preserve_punctuation=True, with_stress=True
 )
 
-config = yaml.safe_load(open("Models/LibriTTS/config.yml"))
+config = yaml.safe_load(open("StyleTTS2/Models/LibriTTS/config.yml"))
 
 # load pretrained ASR model
 ASR_config = config.get("ASR_config", False)
@@ -95,7 +96,7 @@ _ = [model[key].eval() for key in model]
 _ = [model[key].to(device) for key in model]
 
 params_whole = torch.load(
-    "Models/LibriTTS/epochs_2nd_00020.pth", map_location="cpu"
+    "StyleTTS2/Models/LibriTTS/epochs_2nd_00020.pth", map_location="cpu"
 )
 params = params_whole["net"]
 
