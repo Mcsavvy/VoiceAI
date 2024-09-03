@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+{% block title %}
+  Home
+{% endblock %}
+{% block extra_css %}
+  <style>
+    main {
+      max-width: 100% !important;
+      width: 100% !important;
+    }
+  </style>
+{% endblock %}
+{% block content %}
+  <div class="container mt-5">
+    <div class="jumbotron text-center">
+      <h1 class="display-4">Welcome to VoiceAI</h1>
+      <p class="lead">Navigate to the desired service below:</p>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body text-center">
+            <h5 class="card-title">Text-to-Speech (TTS)</h5>
+            <p class="card-text">Convert text to natural-sounding speech.</p>
+            <a href="{% url 'tts' %}" class="btn btn-primary">Go to TTS</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body text-center">
+            <h5 class="card-title">Voice Cloning</h5>
+            <p class="card-text">Clone a voice from a sample audio.</p>
+            <a href="{% url 'voice_cloning' %}" class="btn btn-primary">Go to Voice Cloning</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body text-center">
+            <h5 class="card-title">Transcription</h5>
+            <p class="card-text">Transcribe audio to text.</p>
+            <a href="{% url 'transcription' %}" class="btn btn-primary">Go to Transcription</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
