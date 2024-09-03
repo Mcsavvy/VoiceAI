@@ -1,6 +1,5 @@
 # ruff: noqa: F405, F403
 
-from os import getenv
 
 from .base import *
 
@@ -8,7 +7,9 @@ from .base import *
 DEBUG = True
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = getenv("DJANGO_SECRET_KEY")
+SECRET_KEY = (
+    "django-insecure-py+ox(el39xsim5&kob(xxx7e5z7=u^e2_2j1so*9_6nnr=yff"
+)
 
 # SECURITY WARNING: define the correct hosts in production!
 ALLOWED_HOSTS = ["*"]
