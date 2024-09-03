@@ -30,6 +30,7 @@ nltk = "^3.9.1"
 matplotlib = "^3.9.2"
 transformers = "^4.44.2"
 librosa = "^0.10.2.post1"
+gunicorn = "^23.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
