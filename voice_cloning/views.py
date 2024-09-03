@@ -5,10 +5,12 @@ import numpy as np
 from django import forms
 from django.core.files.uploadedfile import UploadedFile
 from django.http import HttpResponse
+from django.utils.decorators import method_decorator
 from django.views.generic import FormView
 from scipy.io.wavfile import write
 
 from app import utils
+from app.decorators import login_required
 from StyleTTS2 import msinference
 from StyleTTS2.text_utils import split_and_recombine_text
 
@@ -98,6 +100,7 @@ class VoiceCloneForm(forms.Form):
     )
 
 
+@method_decorator([login_required], name="dispatch")
 class VoiceCloneView(FormView):
     template_name = "pages/voice-cloning.html"
     form_class = VoiceCloneForm

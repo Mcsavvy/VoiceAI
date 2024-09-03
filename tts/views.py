@@ -2,7 +2,10 @@ from uuid import uuid4
 
 from django import forms
 from django.http import HttpResponse
+from django.utils.decorators import method_decorator
 from django.views.generic import FormView
+
+from app.decorators import login_required
 
 # Create your views here.
 
@@ -18,6 +21,7 @@ class TextToSpeechForm(forms.Form):
     )
 
 
+@method_decorator([login_required], name="dispatch")
 class TextToSpeechView(FormView):
     template_name = "pages/tts.html"
     form_class = TextToSpeechForm
