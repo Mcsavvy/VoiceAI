@@ -6,10 +6,11 @@ import whisper
 from django import forms
 from django.core.files.uploadedfile import UploadedFile
 from django.http import HttpResponse
-from django.utils.decorators import method_decorator
+
+# from django.utils.decorators import method_decorator
 from django.views.generic import FormView
 
-from app.decorators import login_required
+# from app.decorators import login_required
 
 model = whisper.load_model("base")
 
@@ -26,7 +27,7 @@ class TranscriptionForm(forms.Form):
         }
 
 
-@method_decorator([login_required], name="dispatch")
+# @method_decorator([login_required], name="dispatch")
 class TranscriptionView(FormView):
     form_class = TranscriptionForm
     template_name = "pages/transcription.html"
