@@ -2,7 +2,6 @@ django
 whitenoise
 django_browser_reload
 openai_whisper
-fairseq
 tensorboardx
 monotonic_align
 einops_exts
