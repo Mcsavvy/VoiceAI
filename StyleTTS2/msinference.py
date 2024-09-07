@@ -96,7 +96,7 @@ _ = [model[key].eval() for key in model]
 _ = [model[key].to(device) for key in model]
 
 params_whole = torch.load(
-    "StyleTTS2/Models/LibriTTS/epochs_2nd_00020.pth", map_location="cpu"
+    "StyleTTS2/Models/LibriTTS/epoch_2nd_00020.pth", map_location="cpu"
 )
 params = params_whole["net"]
 
