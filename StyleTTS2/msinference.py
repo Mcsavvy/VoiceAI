@@ -3,6 +3,7 @@ import random
 
 # load packages
 import librosa
+import nltk
 import numpy as np
 import phonemizer
 import torch
@@ -20,6 +21,11 @@ from .text_utils import TextCleaner
 from .utils import *
 from .Utils.PLBERT.util import load_plbert
 
+nltk.download("punkt")
+try:
+    nltk.download("punkt_tab")
+except Exception:
+    pass
 torch.manual_seed(0)
 torch.backends.cudnn.benchmark = False
 torch.backends.cudnn.deterministic = True
