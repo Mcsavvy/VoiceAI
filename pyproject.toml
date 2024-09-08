@@ -12,26 +12,11 @@ python = "3.10.3"
 django = "^5.1"
 whitenoise = "^6.7.0"
 django-browser-reload = "^1.15.0"
-openai-whisper = "^20231117"
-fairseq = "^0.12.2"
-tensorboardx = "^2.6.2.2"
-monotonic-align = {git = "https://github.com/resemble-ai/monotonic_align.git"}
-einops-exts = "^0.0.4"
-munch = "^4.0.0"
-pydub = "^0.25.1"
-scipy = "^1.14.1"
-joblib = "^1.4.2"
-attr = "^0.3.2"
 python-dateutil = "^2.9.0.post0"
-babel = "^2.16.0"
-phonemizer = "^3.3.0"
-cached-path = "^1.6.3"
-nltk = "^3.9.1"
-matplotlib = "^3.9.2"
-transformers = "^4.44.2"
-librosa = "^0.10.2.post1"
 gunicorn = "^23.0.0"
 gevent = "^24.2.1"
+melotts = {git = "https://github.com/myshell-ai/MeloTTS.git"}
+myshell-openvoice = {git = "https://github.com/myshell-ai/OpenVoice.git"}
 
 
 [tool.poetry.group.dev.dependencies]

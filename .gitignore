@@ -54,3 +54,4 @@ test_*.py
 *.ogg
 
 bark
+checkpoints*
