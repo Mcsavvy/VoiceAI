@@ -1,37 +1,35 @@
-import datetime
-import os
+# ruff: noqa: E402
+import warnings
 
-import numpy as np
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
+import datetime
+
 from django import forms
 from django.conf import settings
 from django.http import HttpResponse
 
 # from django.utils.decorators import method_decorator
 from django.views.generic import FormView
-from scipy.io.wavfile import write
+from melo.api import TTS
 
 from app import utils
 
 # from app.decorators import login_required
-from StyleTTS2 import msinference
-from StyleTTS2.text_utils import split_and_recombine_text
 
 # Create your views here.
 
 
-def is_voice_file(file):
-    return os.path.isfile(file) and os.path.splitext(file)[1] in [
-        ".mp3",
-        ".wav",
-    ]
-
-
 VOICE_ROOT = settings.VOICE_ROOT
-voices = os.listdir(VOICE_ROOT)
-voices = filter(
-    lambda x: is_voice_file(os.path.join(VOICE_ROOT, x)),
-    voices,
-)
+
+SPEAKERS = {
+    "EN": ["EN-Default", "EN-US", "EN-BR", "EN_INDIA", "EN-AU"],
+    "FR": ["FR"],
+    "JP": ["JP"],
+    "ES": ["ES"],
+    "ZH": ["ZH"],
+    "KR": ["KR"],
+}
 
 
 class TextToSpeechForm(forms.Form):
@@ -43,13 +41,36 @@ class TextToSpeechForm(forms.Form):
         ),
         required=True,
     )
-    voice = forms.ChoiceField(
-        label="Select Voice",
-        choices=[(voice, voice) for voice in voices],
+    language = forms.ChoiceField(
+        label="Select Language",
+        choices=[(lang, lang) for lang in SPEAKERS.keys()],
+        widget=forms.Select(
+            attrs={"class": "form-control my-3 border", "id": "language"}
+        ),
+        required=True,
+    )
+    speaker = forms.ChoiceField(
+        label="Select Speaker",
+        choices=[(speaker, speaker) for speaker in SPEAKERS["EN"]],
         widget=forms.Select(
             attrs={"class": "form-control my-3 border", "id": "voice"}
         ),
         required=True,
+    )
+    speed = forms.FloatField(
+        label="Speed",
+        widget=forms.NumberInput(
+            attrs={
+                "type": "range",
+                "id": "diffusion",
+                "min": "0.5",
+                "max": "2",
+                "step": "0.5",
+                "value": "1",
+                "oninput": "changeInput(event)",
+            }
+        ),
+        required=False,
     )
 
 
@@ -60,32 +81,21 @@ class TextToSpeechView(FormView):
 
     def form_valid(self, form):
         text = form.cleaned_data["text"]
-        voice = form.cleaned_data["voice"]
-        diffusion = 5
-        embedding_scale = 1
-        alpha = 0.3
-        beta = 0.7
-        texts = split_and_recombine_text(text)
+        language = form.cleaned_data["language"]
+        speaker = form.cleaned_data["speaker"]
+        speed = form.cleaned_data["speed"]
         id = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        model = TTS(language=language)
+        voice_tensor = model.hps.data.spk2id[speaker]
         filename = f"{id}.wav"
-        voice_path = utils.get_voice_path(voice)
-        voice_tensor = msinference.compute_style(voice_path)
-        audios = []
-        for text in texts:
-            audios.append(
-                msinference.inference(
-                    text,
-                    voice_tensor,
-                    alpha=alpha,
-                    beta=beta,
-                    diffusion_steps=diffusion,
-                    embedding_scale=embedding_scale,
-                )
-            )
         upload_path = utils.get_media_path(filename, "synthesized")
+        model.tts_to_file(
+            text,
+            voice_tensor,
+            upload_path,
+            speed=speed,
+        )
         file_url = utils.get_media_url(filename, "synthesized")
-        os.makedirs(os.path.dirname(upload_path), exist_ok=True)
-        write(upload_path, 24000, np.concatenate(audios))
         return HttpResponse(
             f'<audio controls><source src="{file_url}" type="audio/wav"></audio>'
         )
