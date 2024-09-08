@@ -8,6 +8,7 @@ import os
 import sys
 
 import nltk
+from faster_whisper import WhisperModel
 from melo.api import TTS
 
 # TODO: Fix the import error
@@ -44,3 +45,11 @@ device = "auto"  # Will automatically use GPU if available
 for language in ["EN", "ES", "FR", "ZH", "JP", "KR"]:
     print(f"Downloading {language} model...")
     model = TTS(language=language, device=device)
+
+print("Downloading Whisper model...")
+model = WhisperModel(
+    settings.WHISPER_MODEL,
+    device="auto",
+)
+
+print("Installation complete.")

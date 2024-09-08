@@ -10,7 +10,7 @@ urlpatterns = [
     path("", include("core.urls")),
     path("tts/", include("tts.urls")),
     path("voice-cloning/", include("voice_cloning.urls")),
-    path("transcription/", include("transcription.urls")),
+    path("asr/", include("transcription.urls")),
 ]
 
 # urlpatterns += staticfiles_urlpatterns()

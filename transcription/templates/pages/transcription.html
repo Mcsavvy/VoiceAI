@@ -12,6 +12,10 @@
           <h1 class="text-2xl font-bold text-center mb-4">Transcribe Audio</h1>
           <form id="transcription-form" enctype="multipart/form-data" hx-post="{% url 'transcription' %}" hx-target="#transcription-text" hx-swap="innerHTML" hx-disabled-elt="button[type=submit]">
             {% csrf_token %}
+          <div class="form-group">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="language">Language In Audio (optional)</label>
+            {{ form.language }}
+          </div>
             <div class="mb-4">
               <label class="block text-gray-700 text-sm font-bold mb-2" for="audio">Audio File</label>
               <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="audio" name="audio" type="file" accept="audio/*" required />
