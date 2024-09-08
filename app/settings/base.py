@@ -136,6 +136,12 @@ MEDIA_URL = "/media/"
 
 VOICE_ROOT = os.path.join(BASE_DIR, "voices")
 
+OPENVOICE_V2_CHECKPOINT_URL = "https://myshell-public-repo-host.s3.amazonaws.com/openvoice/checkpoints_v2_0417.zip"
+OPENVOICE_V2_CHECKPOINT_NAME = os.path.basename(OPENVOICE_V2_CHECKPOINT_URL)
+OPENVOICE_V2_CHECKPOINT_PATH = os.path.join(BASE_DIR, "checkpoints_v2")
+
+os.makedirs(VOICE_ROOT, exist_ok=True)
+
 # Default storage settings, with the staticfiles storage updated.
 # See https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-STORAGES
 STORAGES = {
