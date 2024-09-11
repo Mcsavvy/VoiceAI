@@ -107,18 +107,19 @@ class VoiceCloneView(FormView):
         text = form.cleaned_data["text"]
         language = form.cleaned_data["language"]
         speaker = form.cleaned_data["speaker"]
+        speaker_key = speaker.lower().replace("_", "-")
         speed = form.cleaned_data["speed"]
 
         id = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         filename = f"{id}.wav"
         if voice.name:
-            filename = "{0}-{id}.{1}".format(
+            filename = "{0}-{id}{1}".format(
                 *os.path.splitext(voice.name), id=id
             )
         voice_path = utils.get_voice_path(filename, "uploads")
-        base_path = utils.get_voice_path("base", "temp")
+        base_path = utils.get_voice_path("base.wav", "temp")
         upload_path = utils.get_media_path(
-            "{}.wav".format(os.path.splitext(os.path.basename(filename))[0]),
+            "{}.wav".format(os.path.splitext(filename)[0]),
             "clones",
         )
         os.makedirs(os.path.dirname(voice_path), exist_ok=True)
@@ -128,13 +129,13 @@ class VoiceCloneView(FormView):
             for chunk in voice.chunks():
                 f.write(chunk)
 
-        source_se = torch.load(
-            f"checkpoints_v2/base_speakers/ses/{speaker}.pth",
-            map_location=device,
-        )
         model = TTS(language=language, device=device)
         model.tts_to_file(
             text, model.hps.data.spk2id[speaker], base_path, speed=speed
+        )
+        source_se = torch.load(
+            f"checkpoints_v2/base_speakers/ses/{speaker_key}.pth",
+            map_location=device,
         )
         del model
 
@@ -143,7 +144,7 @@ class VoiceCloneView(FormView):
         )
         tone_color_converter.load_ckpt(f"{ckpt_converter}/checkpoint.pth")
         target_se, audio_name = se_extractor.get_se(
-            filename, tone_color_converter, vad=False
+            voice_path, tone_color_converter, vad=False
         )
         encode_message = "@MyShell"
         tone_color_converter.convert(
