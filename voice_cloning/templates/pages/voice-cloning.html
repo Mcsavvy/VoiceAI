@@ -59,8 +59,6 @@
       <form enctype="multipart/form-data" hx-post="{% url 'voice_cloning' %}" hx-target="#output" hx-swap="innerHTML" hx-disabled-elt="button[type=submit]">
         {% csrf_token %}
         <div class="form-group">{{ form.text }}</div>
-        <div class="form-group">{{ form.language }}</div>
-        <div class="form-group">{{ form.speaker }}</div>
         <div class="form-group">
           <div class="card" style="height: 200px;">
             <div class="card-body d-flex justify-content-center align-items-center">
@@ -75,6 +73,8 @@
             </div>
           </div>
         </div>
+        <div class="form-group">{{ form.language }}</div>
+        <div class="form-group">{{ form.speaker }}</div>
 
         <div class="form-group mt-2">
           <div class="card" style="height:auto">
