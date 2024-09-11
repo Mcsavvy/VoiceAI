@@ -1,35 +1,51 @@
+# ruff: noqa: E402
+import warnings
+
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
+
 import datetime
 import os
 
-import numpy as np
+import torch
 from django import forms
+from django.conf import settings
 from django.core.files.uploadedfile import UploadedFile
 from django.http import HttpResponse
 
 # from django.utils.decorators import method_decorator
 from django.views.generic import FormView
-from scipy.io.wavfile import write
+from faster_whisper import WhisperModel
+from melo.api import TTS
+from openvoice import se_extractor
+from openvoice.api import ToneColorConverter
 
 from app import utils
 
+VOICE_ROOT = settings.VOICE_ROOT
+
+se_extractor.model = WhisperModel(
+    settings.WHISPER_MODEL,
+    device="auto",
+)
+
+SPEAKERS = {
+    "EN": ["EN-Default", "EN-US", "EN-BR", "EN_INDIA", "EN-AU"],
+    "FR": ["FR"],
+    "JP": ["JP"],
+    "ES": ["ES"],
+    "ZH": ["ZH"],
+    "KR": ["KR"],
+}
+
+CHECKPONT_PATH: str = settings.OPENVOICE_V2_CHECKPOINT_PATH
+ckpt_converter = os.path.join(CHECKPONT_PATH, "converter")
+device = "cuda:0" if torch.cuda.is_available() else "cpu"
+
 # from app.decorators import login_required
-from StyleTTS2 import msinference
-from StyleTTS2.text_utils import split_and_recombine_text
 
 
 class VoiceCloneForm(forms.Form):
-    text = forms.CharField(
-        label="Enter Your Text",
-        widget=forms.Textarea(
-            attrs={
-                "class": "form-control my-3 border",
-                "id": "text",
-                "rows": "4",
-                "placeholder": "Enter your text here",
-            }
-        ),
-        required=True,
-    )
     voice = forms.FileField(
         label="Upload Your Audio File",
         required=True,
@@ -37,68 +53,47 @@ class VoiceCloneForm(forms.Form):
             attrs={"class": "d-none", "id": "voice", "accept": "audio/*"}
         ),
     )
-    diffusion = forms.IntegerField(
-        label="Diffusion",
+    text = forms.CharField(
+        label="Enter Your Text",
+        widget=forms.Textarea(
+            attrs={
+                "class": "form-control my-3 border",
+                "id": "text",
+                "placeholder": "Enter your text here...",
+            }
+        ),
         required=True,
+    )
+    language = forms.ChoiceField(
+        label="Select Language",
+        choices=[(lang, lang) for lang in SPEAKERS.keys()],
+        widget=forms.Select(
+            attrs={"class": "form-control my-3 border", "id": "language"}
+        ),
+        required=True,
+    )
+    speaker = forms.ChoiceField(
+        label="Select Speaker",
+        choices=[(speaker, speaker) for speaker in SPEAKERS["EN"]],
+        widget=forms.Select(
+            attrs={"class": "form-control my-3 border", "id": "voice"}
+        ),
+        required=True,
+    )
+    speed = forms.FloatField(
+        label="Speed",
         widget=forms.NumberInput(
             attrs={
                 "type": "range",
                 "id": "diffusion",
-                "min": "1",
-                "max": "20",
-                "step": "1",
-                "value": "5",
-                "oninput": "changeInput(event)",
-            }
-        ),
-    )
-
-    embedding_scale = forms.IntegerField(
-        label="Embedding Scale",
-        required=True,
-        widget=forms.NumberInput(
-            attrs={
-                "type": "range",
-                "id": "embedding_scale",
-                "min": "1",
-                "max": "10",
-                "step": "1",
+                "min": "0.5",
+                "max": "2",
+                "step": "0.5",
                 "value": "1",
                 "oninput": "changeInput(event)",
             }
         ),
-    )
-
-    alpha = forms.FloatField(
-        label="Alpha",
-        required=True,
-        widget=forms.NumberInput(
-            attrs={
-                "type": "range",
-                "id": "embedding_scale",
-                "min": "0",
-                "max": "1",
-                "step": "0.1",
-                "value": "0.3",
-                "oninput": "changeInput(event, 1, true)",
-            }
-        ),
-    )
-
-    beta = forms.FloatField(
-        label="Beta",
-        required=True,
-        widget=forms.NumberInput(
-            attrs={
-                "type": "range",
-                "id": "embedding_scale",
-                "min": "0",
-                "max": "1",
-                "step": "0.1",
-                "value": "0.7",
-                "oninput": "changeInput(event, 1, true)",
-            }
-        ),
+        required=False,
     )
 
 
@@ -108,43 +103,62 @@ class VoiceCloneView(FormView):
     form_class = VoiceCloneForm
 
     def form_valid(self, form):
-        text = form.cleaned_data["text"]
         voice: UploadedFile = form.cleaned_data["voice"]
-        diffusion = form.cleaned_data["diffusion"]
-        embedding_scale = form.cleaned_data["embedding_scale"]
-        alpha = form.cleaned_data["alpha"]
-        beta = form.cleaned_data["beta"]
+        text = form.cleaned_data["text"]
+        language = form.cleaned_data["language"]
+        speaker = form.cleaned_data["speaker"]
+        speed = form.cleaned_data["speed"]
 
-        texts = split_and_recombine_text(text)
         id = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         filename = f"{id}.wav"
         if voice.name:
-            filename = f"{os.path.splitext(voice.name)[0]}-{id}.wav"
+            filename = "{0}-{id}.{1}".format(
+                *os.path.splitext(voice.name), id=id
+            )
         voice_path = utils.get_voice_path(filename, "uploads")
+        base_path = utils.get_voice_path("base", "temp")
+        upload_path = utils.get_media_path(
+            "{}.wav".format(os.path.splitext(os.path.basename(filename))[0]),
+            "clones",
+        )
         os.makedirs(os.path.dirname(voice_path), exist_ok=True)
+        os.makedirs(os.path.dirname(base_path), exist_ok=True)
+        os.makedirs(os.path.dirname(upload_path), exist_ok=True)
         with open(voice_path, "wb") as f:
             for chunk in voice.chunks():
                 f.write(chunk)
-        voice_tensor = msinference.compute_style(voice_path)
-        audios = []
-        for text in texts:
-            audios.append(
-                msinference.inference(
-                    text,
-                    voice_tensor,
-                    alpha=alpha,
-                    beta=beta,
-                    diffusion_steps=diffusion,
-                    embedding_scale=embedding_scale,
-                )
-            )
-        upload_path = utils.get_media_path(filename, "clones")
-        file_url = utils.get_media_url(filename, "clones")
-        os.makedirs(os.path.dirname(upload_path), exist_ok=True)
-        write(upload_path, 24000, np.concatenate(audios))
+
+        source_se = torch.load(
+            f"checkpoints_v2/base_speakers/ses/{speaker}.pth",
+            map_location=device,
+        )
+        model = TTS(language=language, device=device)
+        model.tts_to_file(
+            text, model.hps.data.spk2id[speaker], base_path, speed=speed
+        )
+        del model
+
+        tone_color_converter = ToneColorConverter(
+            f"{ckpt_converter}/config.json", device=device
+        )
+        tone_color_converter.load_ckpt(f"{ckpt_converter}/checkpoint.pth")
+        target_se, audio_name = se_extractor.get_se(
+            filename, tone_color_converter, vad=False
+        )
+        encode_message = "@MyShell"
+        tone_color_converter.convert(
+            audio_src_path=base_path,
+            src_se=source_se,
+            tgt_se=target_se,
+            output_path=upload_path,
+            message=encode_message,
+        )
+        file_url = utils.get_media_url(os.path.basename(upload_path), "clones")
         return HttpResponse(
             f'<audio controls><source src="{file_url}" type="audio/wav"></audio>'
         )
 
-    def form_invalid(self, form):
-        return HttpResponse(f'<p style="color:red;">{form.errors}</p>')
+    def form_invalid(self, form: VoiceCloneForm):
+        return HttpResponse(
+            f'<p style="color:red;">{form.errors.as_text()}</p>'
+        )
