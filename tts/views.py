@@ -35,9 +35,12 @@ SPEAKERS = {
 class TextToSpeechForm(forms.Form):
     text = forms.CharField(
         label="Enter Your Text",
-        max_length=1000,
         widget=forms.Textarea(
-            attrs={"class": "form-control my-3 border", "id": "text"}
+            attrs={
+                "class": "form-control my-3 border",
+                "id": "text",
+                "placeholder": "Enter your text here...",
+            }
         ),
         required=True,
     )
