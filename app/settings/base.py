@@ -170,7 +170,7 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "DEBUG",
+            "level": "WARNING",
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
@@ -193,11 +193,11 @@ LOGGING = {
         },
         "urllib3": {
             "handlers": ["console"],
-            "level": "INFO",
+            "level": "ERROR",
         },
         "": {
             "handlers": ["console"],
-            "level": "DEBUG",
+            "level": "WARNING",
         },
     },
 }
