@@ -1,4 +1,5 @@
 # ruff: noqa: E402
+import os
 import warnings
 
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -92,6 +93,7 @@ class TextToSpeechView(FormView):
         voice_tensor = model.hps.data.spk2id[speaker]
         filename = f"{id}.wav"
         upload_path = utils.get_media_path(filename, "synthesized")
+        os.makedirs(os.path.dirname(upload_path), exist_ok=True)
         model.tts_to_file(
             text,
             voice_tensor,
