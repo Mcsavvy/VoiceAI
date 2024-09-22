@@ -86,7 +86,10 @@ class TextToSpeechView(FormView):
     def form_valid(self, form):
         text = form.cleaned_data["text"]
         language = form.cleaned_data["language"]
-        speaker = form.cleaned_data["speaker"]
+        if language == "EN":
+            speaker = form.cleaned_data["speaker"]
+        else:
+            speaker = SPEAKERS[language][0]
         speed = form.cleaned_data["speed"]
         id = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         model = TTS(language=language)
