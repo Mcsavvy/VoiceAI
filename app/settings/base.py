@@ -142,6 +142,7 @@ OPENVOICE_V2_CHECKPOINT_PATH = os.path.join(BASE_DIR, "checkpoints_v2")
 WHISPER_MODEL = "small"
 
 os.makedirs(VOICE_ROOT, exist_ok=True)
+os.makedirs(MEDIA_ROOT, exist_ok=True)
 
 # Default storage settings, with the staticfiles storage updated.
 # See https://docs.djangoproject.com/en/5.0/ref/settings/#std-setting-STORAGES
