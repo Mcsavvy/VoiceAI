@@ -106,7 +106,10 @@ class VoiceCloneView(FormView):
         voice: UploadedFile = form.cleaned_data["voice"]
         text = form.cleaned_data["text"]
         language = form.cleaned_data["language"]
-        speaker = form.cleaned_data["speaker"]
+        if language == "EN":
+            speaker = form.cleaned_data["speaker"]
+        else:
+            speaker = SPEAKERS[language][0]
         speaker_key = speaker.lower().replace("_", "-")
         speed = form.cleaned_data["speed"]
 
